@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS motorcycles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    brand VARCHAR(100) NOT NULL,
+    type VARCHAR(100) NOT NULL,
+    engine_volume INT NOT NULL,
+    power INT NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    model_year INT NOT NULL,
+    image VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS contact_requests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(120) NOT NULL,
+    phone VARCHAR(50) NOT NULL,
+    email VARCHAR(150) NOT NULL,
+    message TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
