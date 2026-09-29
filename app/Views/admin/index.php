@@ -64,6 +64,11 @@ $formData = $isEditing ? $editMotorcycle : $old;
             <h3><?= number_format((float) $stats['total_revenue'], 0, '', ' ') ?> грн</h3>
             <p>Загальна сума замовлень</p>
         </article>
+        <article class="info-card">
+            <span class="section-label">Відгуки</span>
+            <a class="button button-secondary button-small" href="<?= htmlspecialchars($baseUrl . '/admin/reviews') ?>" style="display:block; margin-top:10px;">Модерація</a>
+            <p>Керування відгуками</p>
+        </article>
     </section>
 
     <section class="contact-grid">

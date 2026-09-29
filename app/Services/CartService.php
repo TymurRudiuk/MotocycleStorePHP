@@ -24,20 +24,32 @@ class CartService
         return $items;
     }
 
-    public function add(int $motorcycleId): void
+    public function add(int $motorcycleId): bool
     {
         $_SESSION['cart'] ??= [];
-        $_SESSION['cart'][$motorcycleId] = (int) ($_SESSION['cart'][$motorcycleId] ?? 0) + 1;
+        $currentQuantity = (int) ($_SESSION['cart'][$motorcycleId] ?? 0);
+
+        if ($currentQuantity >= 10) {
+            return false;
+        }
+
+        $_SESSION['cart'][$motorcycleId] = $currentQuantity + 1;
+        return true;
     }
 
-    public function update(int $motorcycleId, int $quantity): void
+    public function update(int $motorcycleId, int $quantity): bool
     {
         if ($quantity <= 0) {
             unset($_SESSION['cart'][$motorcycleId]);
-            return;
+            return true;
+        }
+
+        if ($quantity > 10) {
+            return false;
         }
 
         $_SESSION['cart'][$motorcycleId] = $quantity;
+        return true;
     }
 
     public function remove(int $motorcycleId): void

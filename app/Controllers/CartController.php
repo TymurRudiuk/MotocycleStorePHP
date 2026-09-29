@@ -36,7 +36,9 @@ class CartController extends BaseController
         $motorcycleId = (int) ($_POST['motorcycle_id'] ?? 0);
 
         if ($this->repository->findById($motorcycleId) !== null) {
-            $this->cartService->add($motorcycleId);
+            if (!$this->cartService->add($motorcycleId)) {
+                $_SESSION['cart_error'] = 'Максимальна кількість товару в кошику — 10 шт.';
+            }
         }
 
         $this->redirect('/cart');
@@ -44,8 +46,15 @@ class CartController extends BaseController
 
     public function update(): void
     {
+        $error = false;
         foreach (($_POST['quantities'] ?? []) as $motorcycleId => $quantity) {
-            $this->cartService->update((int) $motorcycleId, (int) $quantity);
+            if (!$this->cartService->update((int) $motorcycleId, (int) $quantity)) {
+                $error = true;
+            }
+        }
+
+        if ($error) {
+            $_SESSION['cart_error'] = 'Максимальна кількість товару в кошику — 10 шт.';
         }
 
         $this->redirect('/cart');

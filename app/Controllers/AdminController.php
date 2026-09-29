@@ -8,6 +8,7 @@ require_once __DIR__ . '/../Models/AdminMotorcycleRepository.php';
 require_once __DIR__ . '/../Models/OrderRepository.php';
 require_once __DIR__ . '/../Models/AdminUserRepository.php';
 require_once __DIR__ . '/../Models/MotorcycleClassRepository.php';
+require_once __DIR__ . '/../Models/ReviewRepository.php';
 
 class AdminController extends BaseController
 {
@@ -16,6 +17,7 @@ class AdminController extends BaseController
     private OrderRepository $orderRepository;
     private AdminUserRepository $adminUserRepository;
     private MotorcycleClassRepository $motorcycleClassRepository;
+    private ReviewRepository $reviewRepository;
 
     public function __construct(array $config = [])
     {
@@ -25,6 +27,7 @@ class AdminController extends BaseController
         $this->orderRepository = new OrderRepository($config);
         $this->adminUserRepository = new AdminUserRepository($config);
         $this->motorcycleClassRepository = new MotorcycleClassRepository($config);
+        $this->reviewRepository = new ReviewRepository($config);
     }
 
     public function index(): void
@@ -222,6 +225,51 @@ class AdminController extends BaseController
         $this->redirect('/admin');
     }
 
+    public function reviews(): void
+    {
+        $this->ensureAuthenticated();
+
+        $pendingReviews = $this->reviewRepository->getPending();
+
+        $this->view('admin/reviews', [
+            'title' => 'Модерація відгуків',
+            'appName' => $this->config['app_name'] ?? 'MotoCycle Store',
+            'baseUrl' => $this->config['base_url'] ?? '',
+            'reviews' => $pendingReviews,
+            'successMessage' => $_SESSION['admin_success'] ?? null,
+        ]);
+
+        unset($_SESSION['admin_success']);
+    }
+
+    public function approveReview(): void
+    {
+        $this->ensureAuthenticated();
+
+        $id = (int) ($_POST['id'] ?? 0);
+        if ($id > 0 && $this->reviewRepository->approve($id)) {
+            $_SESSION['admin_success'] = 'Відгук схвалено.';
+        } else {
+            $_SESSION['admin_success'] = 'Не вдалося схвалити відгук.';
+        }
+
+        $this->redirect('/admin/reviews');
+    }
+
+    public function deleteReview(): void
+    {
+        $this->ensureAuthenticated();
+
+        $id = (int) ($_POST['id'] ?? 0);
+        if ($id > 0 && $this->reviewRepository->delete($id)) {
+            $_SESSION['admin_success'] = 'Відгук видалено.';
+        } else {
+            $_SESSION['admin_success'] = 'Не вдалося видалити відгук.';
+        }
+
+        $this->redirect('/admin/reviews');
+    }
+
     private function ensureAuthenticated(): void
     {
         if (!($_SESSION['is_admin'] ?? false)) {
@@ -236,6 +284,15 @@ class AdminController extends BaseController
         }
 
         if (($file['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
+            return $existingImage;
+        }
+
+        // Validate MIME type
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mimeType = $finfo->file($file['tmp_name']);
+        $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+        if (!in_array($mimeType, $allowedMimeTypes, true)) {
             return $existingImage;
         }
 
