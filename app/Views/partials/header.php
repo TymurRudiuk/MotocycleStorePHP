@@ -57,6 +57,7 @@ $navItems = [
         };
     </script>
     <style>body { font-family: Inter, Arial, sans-serif; }</style>
+    <script src="/assets/js/main.js" defer></script>
 </head>
 <body class="min-h-screen bg-slate-50 text-slate-900">
 <header class="sticky top-0 z-30 border-b border-slate-200/80 bg-white/85 backdrop-blur">

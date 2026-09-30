@@ -53,14 +53,17 @@ require __DIR__ . '/../partials/header.php';
             <p class="mt-2 text-sm">Каталог тимчасово недоступний. Зателефонуйте нам — підкажемо наявність моделей.</p>
         </div>
     <?php elseif (($motorcycles ?? []) === []): ?>
-        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-soft">
-            <h3 class="text-lg font-semibold">Товарів не знайдено</h3>
+        <div id="no-results-message" class="rounded-3xl border border-slate-200 bg-white p-6 shadow-soft">
             <p class="mt-2 text-sm text-slate-500">Спробуйте змінити параметри пошуку або зв’яжіться з нами — підберемо модель індивідуально.</p>
         </div>
     <?php else: ?>
-        <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        <div id="motorcycle-grid" class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
             <?php foreach ($motorcycles as $motorcycle): ?>
-                <article class="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-soft transition hover:-translate-y-1 hover:shadow-2xl">
+                <article class="motorcycle-card group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-soft transition hover:-translate-y-1 hover:shadow-2xl"
+                    data-name="<?= htmlspecialchars(strtolower($motorcycle['name'])) ?>"
+                    data-brand="<?= htmlspecialchars(strtolower($motorcycle['brand'])) ?>"
+                    data-type="<?= htmlspecialchars(strtolower($motorcycle['type'])) ?>"
+                    data-price="<?= (float) $motorcycle['price'] ?>">
                     <div class="flex h-[220px] items-center justify-center overflow-hidden rounded-2xl bg-slate-100 p-4">
                         <img src="<?= htmlspecialchars($motorcycle['image']) ?>" alt="<?= htmlspecialchars($motorcycle['name']) ?>" class="h-full w-full object-contain transition duration-300 group-hover:scale-[1.03]">
                     </div>
