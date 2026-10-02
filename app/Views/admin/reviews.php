@@ -1,84 +1,84 @@
-<!DOCTYPE html>
-<html lang="uk">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($title ?? 'Модерація відгуків') ?> | <?= htmlspecialchars($appName ?? 'MotoCycle Store') ?></title>
-    <link rel="stylesheet" href="<?= htmlspecialchars(rtrim($baseUrl ?? '', '/')) ?>/assets/css/style.css">
-</head>
-<body>
 <?php
-$baseUrl = rtrim($baseUrl ?? '', '/');
-$homeUrl = $baseUrl === '' ? '/' : $baseUrl . '/';
-$catalogUrl = $baseUrl . '/motorcycles';
-$cartUrl = $baseUrl . '/cart';
+$title = $title ?? 'Модерація відгуків';
+$reviews = $reviews ?? [];
+require __DIR__ . '/../partials/header.php';
 ?>
-<header>
-    <h1><?= htmlspecialchars($appName ?? 'MotoCycle Store') ?></h1>
-    <nav>
-        <a href="<?= htmlspecialchars($homeUrl) ?>">Головна</a>
-        <a href="<?= htmlspecialchars($catalogUrl) ?>">Каталог</a>
-        <a href="<?= htmlspecialchars($cartUrl) ?>">Кошик</a>
-        <form method="post" action="<?= htmlspecialchars($baseUrl . '/admin/logout') ?>">
-            <button type="submit" class="button button-secondary button-small">Вийти</button>
-        </form>
-    </nav>
-</header>
-<main>
-    <section class="contact-card">
-        <span class="section-label">Адмін-панель</span>
-        <h2>Модерація відгуків</h2>
-        <a class="button button-secondary button-small" href="<?= htmlspecialchars($baseUrl . '/admin') ?>">Повернутися до головної адмінки</a>
+<section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-soft sm:p-8">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+            <span class="text-xs font-semibold uppercase tracking-[0.25em] text-brand-600">Адмін-панель</span>
+            <h1 class="mt-2 text-3xl font-black tracking-tight text-slate-900">Модерація відгуків</h1>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+            <a href="<?= htmlspecialchars($baseUrl . '/admin') ?>"
+               class="rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100">
+                ← До адмін-панелі
+            </a>
+            <form method="post" action="<?= htmlspecialchars($baseUrl . '/admin/logout') ?>">
+                <?= Csrf::field() ?>
+                <button type="submit"
+                        class="rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700">
+                    Вийти
+                </button>
+            </form>
+        </div>
+    </div>
 
-        <?php if (!empty($successMessage)): ?>
-            <div class="alert alert-success"><?= htmlspecialchars($successMessage) ?></div>
-        <?php endif; ?>
+    <?php if (!empty($successMessage)): ?>
+        <div class="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+            <?= htmlspecialchars($successMessage) ?>
+        </div>
+    <?php endif; ?>
 
-        <?php if (empty($reviews)): ?>
-            <p>Немає відгуків, що очікують на схвалення.</p>
-        <?php else: ?>
-            <div class="table-wrap">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Автор</th>
-                            <th>Рейтинг</th>
-                            <th>Коментар</th>
-                            <th>Мотоцикл</th>
-                            <th>Дата</th>
-                            <th>Дії</th>
+    <?php if (empty($reviews)): ?>
+        <p class="mt-8 text-slate-500">Немає відгуків, що очікують на схвалення.</p>
+    <?php else: ?>
+        <div class="mt-8 overflow-x-auto">
+            <table class="w-full min-w-[720px] text-left text-sm">
+                <thead>
+                    <tr class="border-b border-slate-200 text-slate-500">
+                        <th class="px-3 py-3 font-semibold">Автор</th>
+                        <th class="px-3 py-3 font-semibold">Рейтинг</th>
+                        <th class="px-3 py-3 font-semibold">Коментар</th>
+                        <th class="px-3 py-3 font-semibold">Мотоцикл</th>
+                        <th class="px-3 py-3 font-semibold">Дата</th>
+                        <th class="px-3 py-3 font-semibold">Дії</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    <?php foreach ($reviews as $review): ?>
+                        <tr class="align-top">
+                            <td class="px-3 py-4 font-medium text-slate-900"><?= htmlspecialchars($review['author_name']) ?></td>
+                            <td class="px-3 py-4 text-slate-700"><?= (int) $review['rating'] ?>/5</td>
+                            <td class="max-w-xs whitespace-pre-line px-3 py-4 text-slate-700"><?= htmlspecialchars($review['comment']) ?></td>
+                            <td class="px-3 py-4 text-slate-700"><?= htmlspecialchars($review['motorcycle_name']) ?></td>
+                            <td class="whitespace-nowrap px-3 py-4 text-slate-500"><?= htmlspecialchars($review['created_at']) ?></td>
+                            <td class="px-3 py-4">
+                                <div class="flex gap-2">
+                                    <form method="post" action="<?= htmlspecialchars($baseUrl . '/admin/reviews/approve') ?>">
+                                        <?= Csrf::field() ?>
+                                        <input type="hidden" name="id" value="<?= (int) $review['id'] ?>">
+                                        <button type="submit"
+                                                class="rounded-full bg-brand-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-brand-700">
+                                            Схвалити
+                                        </button>
+                                    </form>
+                                    <form method="post" action="<?= htmlspecialchars($baseUrl . '/admin/reviews/delete') ?>"
+                                          onsubmit="return confirm('Видалити цей відгук?');">
+                                        <?= Csrf::field() ?>
+                                        <input type="hidden" name="id" value="<?= (int) $review['id'] ?>">
+                                        <button type="submit"
+                                                class="rounded-full border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100">
+                                            Видалити
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($reviews as $review): ?>
-                            <tr>
-                                <td><?= htmlspecialchars($review['author_name']) ?></td>
-                                <td><?= (int) $review['rating'] ?>/5</td>
-                                <td><?= htmlspecialchars($review['comment']) ?></td>
-                                <td><?= htmlspecialchars($review['motorcycle_name']) ?></td>
-                                <td><?= htmlspecialchars($review['created_at']) ?></td>
-                                <td>
-                                    <div class="inline-actions">
-                                        <form method="post" action="<?= htmlspecialchars($baseUrl . '/admin/reviews/approve') ?>" style="display:inline;">
-                                            <input type="hidden" name="id" value="<?= (int) $review['id'] ?>">
-                                            <button type="submit" class="button button-small">Схвалити</button>
-                                        </form>
-                                        <form method="post" action="<?= htmlspecialchars($baseUrl . '/admin/reviews/delete') ?>" style="display:inline;">
-                                            <input type="hidden" name="id" value="<?= (int) $review['id'] ?>">
-                                            <button type="submit" class="button button-secondary button-small">Видалити</button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php endif; ?>
-    </section>
-</main>
-<footer>
-    <p>© <?= date('Y') ?> <?= htmlspecialchars($appName ?? 'MotoCycle Store') ?>. Всі права захищено.</p>
-</footer>
-</body>
-</html>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
+</section>
+<?php require __DIR__ . '/../partials/footer.php'; ?>

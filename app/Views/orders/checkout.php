@@ -1,91 +1,87 @@
-<!DOCTYPE html>
-<html lang="uk">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($title ?? 'Оформлення замовлення') ?> | <?= htmlspecialchars($appName ?? 'MotoCycle Store') ?></title>
-    <link rel="stylesheet" href="<?= htmlspecialchars(rtrim($baseUrl ?? '', '/')) ?>/assets/css/style.css">
-</head>
-<body>
 <?php
-$baseUrl = rtrim($baseUrl ?? '', '/');
-$homeUrl = $baseUrl === '' ? '/' : $baseUrl . '/';
-$catalogUrl = $baseUrl . '/motorcycles';
-$contactsUrl = $baseUrl . '/contacts';
-$cartUrl = $baseUrl . '/cart';
+$title = $title ?? 'Оформлення замовлення';
 $errors = $errors ?? [];
 $old = $old ?? [];
 $items = $items ?? [];
 $totalAmount = $totalAmount ?? 0;
+
+require __DIR__ . '/../partials/header.php';
+
+$fields = [
+    'customer_name' => ['label' => 'Ім’я та прізвище', 'type' => 'text',  'autocomplete' => 'name'],
+    'phone'         => ['label' => 'Телефон',          'type' => 'tel',   'autocomplete' => 'tel'],
+    'email'         => ['label' => 'Email',            'type' => 'email', 'autocomplete' => 'email'],
+    'address'       => ['label' => 'Адреса / спосіб отримання', 'type' => 'text', 'autocomplete' => 'street-address'],
+];
+$inputClass = 'mt-2 w-full rounded-2xl border bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100';
 ?>
-<header>
-    <h1><?= htmlspecialchars($appName ?? 'MotoCycle Store') ?></h1>
-    <nav>
-        <a href="<?= htmlspecialchars($homeUrl) ?>">Головна</a>
-        <a href="<?= htmlspecialchars($catalogUrl) ?>">Каталог</a>
-        <a href="<?= htmlspecialchars($cartUrl) ?>">Кошик</a>
-        <a href="<?= htmlspecialchars($contactsUrl) ?>">Контакти</a>
-    </nav>
-</header>
-<main>
-    <section class="contact-grid">
-        <div class="contact-card">
-            <span class="section-label">Ваше замовлення</span>
-            <h2>Підсумок покупки</h2>
-            <ul class="summary-list">
-                <?php foreach ($items as $item): ?>
-                    <li>
-                        <span><?= htmlspecialchars($item['name']) ?> × <?= (int) $item['quantity'] ?></span>
-                        <strong><?= number_format((float) $item['subtotal'], 0, '', ' ') ?> грн</strong>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-            <p class="price">Разом: <?= number_format((float) $totalAmount, 0, '', ' ') ?> грн</p>
+<div class="mb-8">
+    <span class="text-xs font-semibold uppercase tracking-[0.25em] text-brand-600">Оформлення</span>
+    <h1 class="mt-2 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">Оформлення замовлення</h1>
+</div>
+
+<div class="grid gap-6 lg:grid-cols-5">
+    <!-- Підсумок -->
+    <section class="h-fit rounded-3xl border border-slate-200 bg-white p-6 shadow-soft sm:p-8 lg:col-span-2 lg:sticky lg:top-28">
+        <span class="text-xs font-semibold uppercase tracking-[0.25em] text-brand-600">Ваше замовлення</span>
+        <h2 class="mt-2 text-xl font-bold text-slate-900">Підсумок покупки</h2>
+
+        <ul class="mt-6 divide-y divide-slate-100">
+            <?php foreach ($items as $item): ?>
+                <li class="flex items-start justify-between gap-4 py-3 text-sm">
+                    <span class="text-slate-700">
+                        <?= htmlspecialchars($item['name']) ?>
+                        <span class="text-slate-400">× <?= (int) $item['quantity'] ?></span>
+                    </span>
+                    <strong class="whitespace-nowrap text-slate-900"><?= number_format((float) $item['subtotal'], 0, '', ' ') ?> грн</strong>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+
+        <div class="mt-4 flex items-center justify-between border-t border-slate-200 pt-4">
+            <span class="text-sm font-medium text-slate-500">Разом</span>
+            <span class="text-2xl font-black text-brand-600"><?= number_format((float) $totalAmount, 0, '', ' ') ?> грн</span>
         </div>
 
-        <div class="contact-card">
-            <span class="section-label">Оформлення</span>
-            <h2>Дані покупця</h2>
-            <form method="post" action="<?= htmlspecialchars($baseUrl . '/checkout') ?>" class="contact-form">
-                <label>
-                    Ім’я та прізвище
-                    <input type="text" name="customer_name" value="<?= htmlspecialchars($old['customer_name'] ?? '') ?>">
-                    <?php if (isset($errors['customer_name'])): ?>
-                        <span class="error-text"><?= htmlspecialchars($errors['customer_name']) ?></span>
-                    <?php endif; ?>
-                </label>
-                <label>
-                    Телефон
-                    <input type="text" name="phone" value="<?= htmlspecialchars($old['phone'] ?? '') ?>">
-                    <?php if (isset($errors['phone'])): ?>
-                        <span class="error-text"><?= htmlspecialchars($errors['phone']) ?></span>
-                    <?php endif; ?>
-                </label>
-                <label>
-                    Email
-                    <input type="email" name="email" value="<?= htmlspecialchars($old['email'] ?? '') ?>">
-                    <?php if (isset($errors['email'])): ?>
-                        <span class="error-text"><?= htmlspecialchars($errors['email']) ?></span>
-                    <?php endif; ?>
-                </label>
-                <label>
-                    Адреса / спосіб отримання
-                    <input type="text" name="address" value="<?= htmlspecialchars($old['address'] ?? '') ?>">
-                    <?php if (isset($errors['address'])): ?>
-                        <span class="error-text"><?= htmlspecialchars($errors['address']) ?></span>
-                    <?php endif; ?>
-                </label>
-                <label>
-                    Коментар
-                    <textarea name="notes" rows="4"><?= htmlspecialchars($old['notes'] ?? '') ?></textarea>
-                </label>
-                <button type="submit" class="button">Підтвердити замовлення</button>
-            </form>
-        </div>
+        <a href="<?= htmlspecialchars($baseUrl . '/cart') ?>"
+           class="mt-6 inline-block text-sm font-medium text-slate-500 transition hover:text-slate-900">← Повернутися до кошика</a>
     </section>
-</main>
-<footer>
-    <p>© <?= date('Y') ?> <?= htmlspecialchars($appName ?? 'MotoCycle Store') ?>. Всі права захищено.</p>
-</footer>
-</body>
-</html>
+
+    <!-- Форма -->
+    <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-soft sm:p-8 lg:col-span-3">
+        <span class="text-xs font-semibold uppercase tracking-[0.25em] text-brand-600">Контактні дані</span>
+        <h2 class="mt-2 text-xl font-bold text-slate-900">Дані покупця</h2>
+
+        <form method="post" action="<?= htmlspecialchars($baseUrl . '/checkout') ?>" class="mt-6 space-y-5" novalidate>
+            <?= Csrf::field() ?>
+
+            <?php foreach ($fields as $name => $field): ?>
+                <?php $hasError = isset($errors[$name]); ?>
+                <label class="block text-sm font-medium text-slate-700">
+                    <?= htmlspecialchars($field['label']) ?>
+                    <input
+                        type="<?= $field['type'] ?>"
+                        name="<?= $name ?>"
+                        autocomplete="<?= $field['autocomplete'] ?>"
+                        value="<?= htmlspecialchars($old[$name] ?? '') ?>"
+                        class="<?= $inputClass ?> <?= $hasError ? 'border-red-400' : 'border-slate-300' ?>"
+                    >
+                    <?php if ($hasError): ?>
+                        <span class="mt-1 block text-xs font-normal text-red-600"><?= htmlspecialchars($errors[$name]) ?></span>
+                    <?php endif; ?>
+                </label>
+            <?php endforeach; ?>
+
+            <label class="block text-sm font-medium text-slate-700">
+                Коментар <span class="font-normal text-slate-400">(необов’язково)</span>
+                <textarea name="notes" rows="4" class="<?= $inputClass ?> border-slate-300"><?= htmlspecialchars($old['notes'] ?? '') ?></textarea>
+            </label>
+
+            <button type="submit"
+                    class="w-full rounded-full bg-brand-600 px-6 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700">
+                Підтвердити замовлення
+            </button>
+        </form>
+    </section>
+</div>
+<?php require __DIR__ . '/../partials/footer.php'; ?>

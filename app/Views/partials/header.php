@@ -56,7 +56,21 @@ $navItems = [
             }
         };
     </script>
-    <style>body { font-family: Inter, Arial, sans-serif; }</style>
+    <style>
+        body {
+            font-family: Inter, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        body > main {
+            flex: 1 0 auto;
+            width: 100%;
+        }
+        body > footer {
+            flex-shrink: 0;
+        }
+    </style>
     <script src="/assets/js/main.js" defer></script>
 </head>
 <body class="min-h-screen bg-slate-50 text-slate-900">
